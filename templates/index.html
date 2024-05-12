@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart User Management Home</title>
+</head>
+<body>
+    {% if session.user_id %}
+        <div id="userButtons">
+            <button onclick="window.location.href='/update'">Modify Info</button>
+            <form action="/logout" method="post">
+                <button type="submit">Logout</button>
+            </form>
+        </div>
+    {% else %}
+        <div id="mainButtons">
+            <button onclick="window.location.href='/login'">Login</button>
+            <button onclick="window.location.href='/register'">Register</button>
+        </div>
+    {% endif %}
+</body>
+</html>
