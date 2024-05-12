@@ -1,2 +1,3 @@
 This is a smart home appliance APP
 Users can use it to control hardware devices, such as camera, speaker, light.....
+Now, this project is being developed...... The function cannot work well.
