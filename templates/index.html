@@ -1,23 +1,99 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart User Management Home</title>
-</head>
-<body>
-    {% if session.user_id %}
-        <div id="userButtons">
-            <button onclick="window.location.href='/update'">Modify Info</button>
-            <form action="/logout" method="post">
-                <button type="submit">Logout</button>
-            </form>
-        </div>
-    {% else %}
-        <div id="mainButtons">
-            <button onclick="window.location.href='/login'">Login</button>
-            <button onclick="window.location.href='/register'">Register</button>
-        </div>
-    {% endif %}
-</body>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Home</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='new_icons.ico') }}">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <link rel="stylesheet" href="../static/assets/css/SearchBox.css">
+    <link rel="stylesheet" href="../static/assets/css/fonts.css" />
+    <link rel="stylesheet" href="../static/assets/css/reset.css" />
+    <link rel="stylesheet" href="../static/assets/css/style.css" />
+    <link rel="stylesheet" href="../static/assets/css/responsive.css" />
+    <link rel="stylesheet" href="../static/assets/css/fontawesome.css" />
+
+  </head>
+  <body>
+
+
+    <main class="container">
+      <section>
+          <div id="autocomplete-list"></div>
+        <h1 class="title">
+          <span>HomeFairy</span><span class="black">Your Personal Family Assistant🏠</span>
+        </h1>
+        <nav id="activities">
+          <a href="#lastActivity" class="scroll hide">
+            <i class="fas fa-chevron-right scroll"></i>
+          </a>
+            <a href="/moments" class="activity">
+            <div>Real-time Monitor📷</div>
+            <i class="fas fa-hotel"></i>
+          </a>
+          <a href="#" class="activity">
+            <div>Intercom🔈</div>
+            <i class="fas fa-hotel"></i>
+          </a>
+          <a id="Tourist_Destinations" href="#" class="activity" onclick="return checkUsername();">
+            <div>Notification📍</div>
+            <i class="fas fa-hiking"></i>
+          </a>
+          <a href="#" class="activity" onclick="return checkUsername();">
+            <div>Music🎶</div>
+            <i class="fas fa-hiking"></i>
+          </a>
+            <a href="#" class="activity">
+            <div>Alarm🕑</div>
+            <i class="fas fa-hiking"></i>
+          </a>
+            <a href="#" class="activity">
+            <div>Settings⚙️</div>
+            <i class="fas fa-hiking"></i>
+          </a>
+
+        </nav>
+
+      </section>
+    <footer id="footer">
+
+      <a href="#">Microprocessor Project</a> - 2024-6
+    </footer>
+
+    </div>
+
+{#    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>#}
+    <script src="../static/assets/js/main.js"></script>
+        <script>
+            jQuery.noConflict();
+            jQuery(document).ready(function() {
+                    jQuery('#search-box1').on('input', function() {
+                        var query = jQuery(this).val();
+                        jQuery.get('/autocomplete2?query=' + query, function(data) {
+                            var autocompleteList = jQuery('#autocomplete-list');
+                            autocompleteList.empty();
+                            data.forEach(function(option) {
+                                var listItem = jQuery('<li><span class="bold-text">'+option['label1']+'</span> - <span class="gray-text">' + option['label2'] + '</span> </li>');
+                                listItem.click(function() {
+                                    jQuery('#search-box1').val(option['label1']);
+                                    autocompleteList.empty();
+                                });
+                                autocompleteList.append(listItem);
+                            });
+                        });
+                    });
+                });
+            function checkUsername() {
+                var username = "{{ session.get('username') }}";
+                if (username=== "None") {
+                  alert('Please Login!');
+                  return false;
+                }
+
+                return true;
+              }
+</script>
+  </main>
+  </body>
 </html>
