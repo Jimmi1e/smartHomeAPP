@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="45eedd82-21ad-4bc6-9fb9-11d34a94ae64" name="Changes" comment="version2">
+    <list default="true" id="45eedd82-21ad-4bc6-9fb9-11d34a94ae64" name="Changes" comment="version3">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/assets/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/assets/css/style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -172,7 +170,7 @@
       <workItem from="1715539300560" duration="2962000" />
       <workItem from="1715562359683" duration="144000" />
       <workItem from="1715562593496" duration="3246000" />
-      <workItem from="1715568205647" duration="5500000" />
+      <workItem from="1715568205647" duration="6744000" />
     </task>
     <task id="LOCAL-00001" summary="version2">
       <option name="closed" value="true" />
@@ -206,7 +204,31 @@
       <option name="project" value="LOCAL" />
       <updated>1715569362657</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="version2">
+      <option name="closed" value="true" />
+      <created>1715576948674</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1715576948674</updated>
+    </task>
+    <task id="LOCAL-00006" summary="version3">
+      <option name="closed" value="true" />
+      <created>1715576969962</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1715576969962</updated>
+    </task>
+    <task id="LOCAL-00007" summary="version3">
+      <option name="closed" value="true" />
+      <created>1715576982449</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1715576982449</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -214,10 +236,11 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="version2" />
-    <option name="LAST_COMMIT_MESSAGE" value="version2" />
+    <MESSAGE value="version3" />
+    <option name="LAST_COMMIT_MESSAGE" value="version3" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/SmartHome$app.coverage" NAME="app Coverage Results" MODIFIED="1715576821684" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/SmartHome$app.coverage" NAME="app Coverage Results" MODIFIED="1715577126748" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/SmartHome$db_management.coverage" NAME="db_management Coverage Results" MODIFIED="1715492368186" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/SmartHome$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1715496917622" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
