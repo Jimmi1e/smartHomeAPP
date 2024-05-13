@@ -2,7 +2,7 @@
     --green: #008000;
     --beige: #faf1ed;
     --medium-green: #058171;
-    --max-size-blocks: 700px;
+    --max-size-blocks: 700px;  // ??????????????
 }
 
 body {
@@ -17,15 +17,14 @@ html {
 }
 
 .container {
-    max-width: 1184px;
+    max-width: 100%;
     margin: auto;
-    padding: 20px;
+    padding: 2%;
 }
 
 @media (max-width: 768px) {
     .container {
-        max-width: 100%;
-        padding: 10px;
+        padding: 1%;
     }
 }
 
@@ -50,30 +49,30 @@ a {
 
 p, h1, h2, h3 {
     font-family: Georgia, "Times New Roman", Times, serif;
-    margin-bottom: 20px;
+    margin-bottom: 2%;
 }
 
 h1 {
     font-family: "Trip Sans Bold";
     font-weight: bold;
-    font-size: 32px;
+    font-size: 3.2em;  // ??em????
 }
 
 h2 {
     font-family: "Trip Sans Bold";
     font-weight: bold;
-    font-size: 24px;
+    font-size: 2.4em;
 }
 
 h3 {
-    font-size: 20px;
+    font-size: 2em;
     font-family: "Trip Sans Bold";
 }
 
 @media (max-width: 768px) {
-    h1 { font-size: 28px; }
-    h2 { font-size: 22px; }
-    h3 { font-size: 18px; }
+    h1 { font-size: 2.8em; }
+    h2 { font-size: 2.2em; }
+    h3 { font-size: 1.8em; }
 }
 
 section a:not(.btn):not(.plain):hover {
@@ -82,13 +81,13 @@ section a:not(.btn):not(.plain):hover {
 
 .link.blackbutton1 {
     background: #56B6FF;
-    padding: 15px;
+    padding: 1.5%;
     color: white;
-    font-size: 18px;
+    font-size: 1.8em;
     line-height: 160%;
-    min-width: 40px;
+    min-width: 4%;
     display: inline-block;
-    height: 55px;
+    height: 5.5em;
     border-radius: 20px;
     transition: background-color 0.1s linear, border-color 0.1s linear;
 }
@@ -99,13 +98,13 @@ section a:not(.btn):not(.plain):hover {
 
 .link.blackbutton {
     background: black;
-    padding: 15px;
+    padding: 1.5%;
     color: white;
-    font-size: 18px;
+    font-size: 1.8em;
     line-height: 160%;
-    min-width: 40px;
+    min-width: 4%;
     display: inline-block;
-    height: 27px;
+    height: 2.7em;
     border-radius: 20px;
     transition: background-color 0.1s linear, border-color 0.1s linear;
 }
@@ -115,7 +114,7 @@ section a:not(.btn):not(.plain):hover {
 }
 
 section + section {
-    margin-top: 50px;
+    margin-top: 5%;
 }
 
 .card img:hover {
@@ -125,7 +124,7 @@ section + section {
 }
 
 a.location {
-    font-size: 14px;
+    font-size: 1.4em;
     display: flex;
     justify-content: flex-end;
 }
@@ -148,7 +147,7 @@ header {
 
 header nav {
     display: flex;
-    height: 60px;
+    height: 6em;
 }
 
 @media (max-width: 768px) {
@@ -169,8 +168,7 @@ header #logo {
 header #logo img {
     display: block;
     height: auto;
-    width: 100%; /* Adjusted for smaller screens */
-    max-width: 250px;
+    width: 25em;  // ??em??????
 }
 
 header .link:hover {
@@ -178,35 +176,35 @@ header .link:hover {
 }
 
 header .link + .link {
-    margin-left: 10px;
+    margin-left: 1%;
 }
 
 header .link .icon,
 header .link .fas,
 header .link .fa {
-    margin-right: 3px;
+    margin-right: 0.3em;
 }
 
 main {
-    margin-top: 60px !important;
+    margin-top: 6em;
 }
 
 @media (max-width: 768px) {
     main {
-        margin-top: 20px !important;
+        margin-top: 2em;
     }
 }
 
 h1.title {
-    font-size: 36px;
+    font-size: 5.4em;
     line-height: 120%;
     color: #6af1a1;
-    margin-bottom: 20px;
+    margin-bottom: 2%;
 }
 
 @media (max-width: 768px) {
     h1.title {
-        font-size: 28px;
+        font-size: 4.2em;
     }
 }
 

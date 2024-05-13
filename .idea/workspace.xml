@@ -4,15 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="45eedd82-21ad-4bc6-9fb9-11d34a94ae64" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app_instance.py" afterDir="false" />
+    <list default="true" id="45eedd82-21ad-4bc6-9fb9-11d34a94ae64" name="Changes" comment="version2">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db_management.py" beforeDir="false" afterPath="$PROJECT_DIR$/db_management.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/assets/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/assets/css/style.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/login.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/register.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/update.html" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -177,15 +172,52 @@
       <workItem from="1715539300560" duration="2962000" />
       <workItem from="1715562359683" duration="144000" />
       <workItem from="1715562593496" duration="3246000" />
-      <workItem from="1715568205647" duration="997000" />
+      <workItem from="1715568205647" duration="5500000" />
     </task>
+    <task id="LOCAL-00001" summary="version2">
+      <option name="closed" value="true" />
+      <created>1715569217665</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1715569217665</updated>
+    </task>
+    <task id="LOCAL-00002" summary="version2">
+      <option name="closed" value="true" />
+      <created>1715569243098</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1715569243098</updated>
+    </task>
+    <task id="LOCAL-00003" summary="version2">
+      <option name="closed" value="true" />
+      <created>1715569350610</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1715569350610</updated>
+    </task>
+    <task id="LOCAL-00004" summary="version2">
+      <option name="closed" value="true" />
+      <created>1715569362657</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1715569362657</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="version2" />
+    <option name="LAST_COMMIT_MESSAGE" value="version2" />
+  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/SmartHome$app.coverage" NAME="app Coverage Results" MODIFIED="1715568459619" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/SmartHome$app.coverage" NAME="app Coverage Results" MODIFIED="1715576821684" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/SmartHome$db_management.coverage" NAME="db_management Coverage Results" MODIFIED="1715492368186" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/SmartHome$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1715496917622" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
