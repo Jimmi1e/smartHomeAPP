@@ -4,15 +4,12 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///settings.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
 db = SQLAlchemy(app)
-
 class Settings(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     notifications = db.Column(db.Boolean, default=True)
     smart_monitoring = db.Column(db.Boolean, default=False)
 
-# ??????????????
 with app.app_context():
     db.create_all()
 
