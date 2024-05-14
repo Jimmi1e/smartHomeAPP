@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="45eedd82-21ad-4bc6-9fb9-11d34a94ae64" name="Changes" comment="#version3.0.1 add something that ain't important xd:)">
-      <change afterPath="$PROJECT_DIR$/static/assets/css/settings.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/settings.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
-    </list>
+    <list default="true" id="45eedd82-21ad-4bc6-9fb9-11d34a94ae64" name="Changes" comment="#version3.0.2:We add setting page that users can turn on/off the notification function and Sentry Mode. In addition, we add a widget which allows users to see who are using our program." />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -176,7 +170,7 @@
       <workItem from="1715539300560" duration="2962000" />
       <workItem from="1715562359683" duration="144000" />
       <workItem from="1715562593496" duration="3246000" />
-      <workItem from="1715568205647" duration="14724000" />
+      <workItem from="1715568205647" duration="16130000" />
     </task>
     <task id="LOCAL-00001" summary="version2">
       <option name="closed" value="true" />
@@ -242,7 +236,23 @@
       <option name="project" value="LOCAL" />
       <updated>1715578568703</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="#version3.0.2:We add setting page that users can turn on/off the notification function and Sentry Mode. In addition, we add a widget which allows users to see who are using our program.">
+      <option name="closed" value="true" />
+      <created>1715648333646</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1715648333646</updated>
+    </task>
+    <task id="LOCAL-00010" summary="#version3.0.2:We add setting page that users can turn on/off the notification function and Sentry Mode. In addition, we add a widget which allows users to see who are using our program.">
+      <option name="closed" value="true" />
+      <created>1715648380605</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1715648380605</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -252,7 +262,8 @@
     <MESSAGE value="version2" />
     <MESSAGE value="version3" />
     <MESSAGE value="#version3.0.1 add something that ain't important xd:)" />
-    <option name="LAST_COMMIT_MESSAGE" value="#version3.0.1 add something that ain't important xd:)" />
+    <MESSAGE value="#version3.0.2:We add setting page that users can turn on/off the notification function and Sentry Mode. In addition, we add a widget which allows users to see who are using our program." />
+    <option name="LAST_COMMIT_MESSAGE" value="#version3.0.2:We add setting page that users can turn on/off the notification function and Sentry Mode. In addition, we add a widget which allows users to see who are using our program." />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/SmartHome$app.coverage" NAME="app Coverage Results" MODIFIED="1715647235012" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
