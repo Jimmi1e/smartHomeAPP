@@ -4,8 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="45eedd82-21ad-4bc6-9fb9-11d34a94ae64" name="Changes" comment="#version3.0.3 add something that ain't important xd:)">
+    <list default="true" id="45eedd82-21ad-4bc6-9fb9-11d34a94ae64" name="Changes" comment="#version3.0.4 added some bugs, oh no no no, we fixed some bugs :)">
+      <change afterPath="$PROJECT_DIR$/static/assets/css/admin_centre.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/assets/js/admin_centre.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/admin_centre.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instance/settings.db" beforeDir="false" afterPath="$PROJECT_DIR$/instance/settings.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
     </list>
@@ -20,6 +24,7 @@
         <option value="Flask Main" />
         <option value="Python Script" />
         <option value="HTML File" />
+        <option value="JavaScript File" />
         <option value="CSS File" />
       </list>
     </option>
@@ -175,7 +180,7 @@
       <workItem from="1715562359683" duration="144000" />
       <workItem from="1715562593496" duration="3246000" />
       <workItem from="1715568205647" duration="17220000" />
-      <workItem from="1715652957916" duration="337000" />
+      <workItem from="1715652957916" duration="11764000" />
     </task>
     <task id="LOCAL-00001" summary="version2">
       <option name="closed" value="true" />
@@ -281,7 +286,15 @@
       <option name="project" value="LOCAL" />
       <updated>1715649072904</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="#version3.0.4 added some bugs, oh no no no, we fixed some bugs :)">
+      <option name="closed" value="true" />
+      <created>1715653389809</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1715653389809</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -293,10 +306,11 @@
     <MESSAGE value="#version3.0.2:We add setting page that users can turn on/off the notification function and Sentry Mode. In addition, we add a widget which allows users to see who are using our program." />
     <MESSAGE value="#version3.0.1 add something that ain't important xd:)" />
     <MESSAGE value="#version3.0.3 add something that ain't important xd:)" />
-    <option name="LAST_COMMIT_MESSAGE" value="#version3.0.3 add something that ain't important xd:)" />
+    <MESSAGE value="#version3.0.4 added some bugs, oh no no no, we fixed some bugs :)" />
+    <option name="LAST_COMMIT_MESSAGE" value="#version3.0.4 added some bugs, oh no no no, we fixed some bugs :)" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/SmartHome$app.coverage" NAME="app Coverage Results" MODIFIED="1715649077017" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/SmartHome$app.coverage" NAME="app Coverage Results" MODIFIED="1715727070708" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/SmartHome$db_management.coverage" NAME="db_management Coverage Results" MODIFIED="1715492368186" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/SmartHome$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1715647216600" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
