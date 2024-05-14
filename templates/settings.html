@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <link rel="stylesheet" href="../static/assets/css/settings.css">
+</head>
+<body>
+    <div class="container">
+        <a href="{{ url_for('index') }}" class="back-to-home">
+            <span class="arrow-left">&larr;</span> Back to Home
+        </a>
+        <h1>Settings</h1>
+
+        <div class="setting-item">
+            <label for="notifications">Notification</label>
+            <input type="checkbox" id="notifications">
+            <span id="notification-status">Enable</span>
+        </div>
+
+        <div class="setting-item">
+            <label for="smart-monitoring">Sentry Mode</label>
+            <input type="checkbox" id="smart-monitoring">
+            <span id="monitoring-status">Enable</span>
+        </div>
+
+        <div class="widget-container">
+            <h2>IP Tracker</h2>
+            <h4>Click here to see who are using our program!</h4>
+            <script type="text/javascript" id="clstr_globe" src="//clustrmaps.com/globe.js?d=V5UWdGBhH49cnRMxsauXmA4Zav4eV59auAlPooSqkjM"></script>
+        </div>
+    </div>
+
+    <!-- Raspberry Pi interface comments -->
+    <!-- Notification Switch Interface: connects to the Raspberry Pi's notification system to turn notifications on and off -->
+    <!-- Intelligent Monitor Switch Interface: Connect to the Raspberry Pi's Intelligent Monitor system to enable and disable Intelligent Monitor -->
+
+<script>
+        const notificationsCheckbox = document.getElementById('notifications');
+        const notificationStatus = document.getElementById('notification-status');
+        const smartMonitoringCheckbox = document.getElementById('smart-monitoring');
+        const monitoringStatus = document.getElementById('monitoring-status');
+
+        function updateStatus(checkbox, statusElement) {
+            if (checkbox.checked) {
+                statusElement.textContent = 'Enable';
+            } else {
+                statusElement.textContent = 'Disable';
+            }
+        }
+
+        function saveState() {
+            fetch('/set_settings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    notifications: notificationsCheckbox.checked,
+                    smart_monitoring: smartMonitoringCheckbox.checked
+                })
+            });
+        }
+
+        function loadState() {
+            fetch('/get_settings')
+                .then(response => response.json())
+                .then(data => {
+                    notificationsCheckbox.checked = data.notifications;
+                    smartMonitoringCheckbox.checked = data.smart_monitoring;
+                    updateStatus(notificationsCheckbox, notificationStatus);
+                    updateStatus(smartMonitoringCheckbox, monitoringStatus);
+                });
+        }
+
+        notificationsCheckbox.addEventListener('change', function() {
+            updateStatus(notificationsCheckbox, notificationStatus);
+            saveState();
+        });
+
+        smartMonitoringCheckbox.addEventListener('change', function() {
+            updateStatus(smartMonitoringCheckbox, monitoringStatus);
+            saveState();
+        });
+
+        loadState();
+    </script>
+</body>
+</html>
