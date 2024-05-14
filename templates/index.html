@@ -28,15 +28,15 @@
           <a href="#lastActivity" class="scroll hide">
             <i class="fas fa-chevron-right scroll"></i>
           </a>
-            <a href="#" class="activity">
+            <a href="#" class="activity" onclick="return checkUsername();">
             <div>Real-time Monitor📷</div>
             <i class="fas fa-hotel"></i>
           </a>
-          <a href="#" class="activity">
+          <a href="#" class="activity" onclick="return checkUsername();">
             <div>Intercom🔈</div>
             <i class="fas fa-hotel"></i>
           </a>
-          <a id="Tourist_Destinations" href="#" class="activity" onclick="return checkUsername();">
+          <a href="#" class="activity" onclick="return checkUsername();">
             <div>Notification📍</div>
             <i class="fas fa-hiking"></i>
           </a>
@@ -44,16 +44,16 @@
             <div>Music🎶</div>
             <i class="fas fa-hiking"></i>
           </a>
-            <a href="#" class="activity">
+            <a href="#" class="activity" onclick="return checkUsername();">
             <div>Alarm🕑</div>
             <i class="fas fa-hiking"></i>
                           </a>
-            <a href="#" class="activity">
+            <a href="#" class="activity" onclick="return checkUsername();">
             <div>Fan&#10052;</div>
             <i class="fas fa-hiking"></i>
           </a>
                       </a>
-            <a href="#" class="activity">
+            <a href="#" class="activity" onclick="return checkUsername();">
             <div>Environment&#127777;</div>
             <i class="fas fa-hiking"></i>
           </a>
@@ -97,7 +97,7 @@
             function checkUsername() {
                 var username = "{{ session.get('username') }}";
                 if (username=== "None") {
-                  alert('Please Login!');
+                  alert('This feature will be available soon!');
                   return false;
                 }
 
