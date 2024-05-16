@@ -3,5 +3,5 @@
   <component name="Black">
     <option name="sdkName" value="MPP" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="MPP" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="smarthome" project-jdk-type="Python SDK" />
 </project>

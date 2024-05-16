@@ -1,12 +1,21 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, Response
 from flask_sqlalchemy import SQLAlchemy
 import psutil
 import subprocess
 import platform
+from picamera2 import Picamera2
+import cv2
+import time
+import os
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///settings.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+"monitor"
+# picam2 = Picamera2()
+# picam2.configure(picam2.create_video_configuration(main={"size": (640, 480)}))
+# picam2.start()
 "Admin Centre"
 def get_temperature():
     temp = subprocess.run(['vcgencmd', 'measure_temp'], capture_output=True, text=True).stdout
@@ -60,6 +69,44 @@ def set_settings():
     db.session.add(settings)
     db.session.commit()
     return jsonify({'status': 'success'})
+"monitor"
+def release_camera():
+    os.system('sudo fuser -k /dev/video0')
+    os.system('sudo fuser -k /dev/video1')
+
+def initialize_camera():
+    attempts = 3
+    for i in range(attempts):
+        try:
+            release_camera()
+            picam2 = Picamera2()
+            config = picam2.create_video_configuration(main={"size": (640, 480)})
+            picam2.configure(config)
+            picam2.start()
+            return picam2
+        except Exception as e:
+            print(f"Attempt {i+1} to initialize camera failed: {e}")
+            time.sleep(2)
+    raise RuntimeError("Failed to initialize camera after multiple attempts")
+
+picam2 = initialize_camera()
+
+def gen_frames():
+    while True:
+        frame = picam2.capture_array()
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        ret, buffer = cv2.imencode('.jpg', frame, [int(cv2.IMWRITE_JPEG_QUALITY), 70])
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+@app.route('/video_feed')
+def video_feed():
+    return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/monitor')
+def monitor():
+    return render_template('monitor.html')
 
 
 "Admin Centre"
