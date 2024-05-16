@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications</title>
+    <link rel="stylesheet" href="../static/assets/css/notifications.css">
+</head>
+<body>
+    <div class="container">
+        <a href="{{ url_for('index') }}" class="back-to-home">
+            <span class="arrow-left">&larr;</span> Back to Home
+        </a>
+        <h1>Notifications</h1>
+        <div class="notification-list">
+            {% for notification in notifications %}
+                <div class="notification-item">
+                    <p>{{ notification }}</p>
+                    <img src="../static/changes/{{ notification.split(":")[0] }}.jpg" alt="Change detected">
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

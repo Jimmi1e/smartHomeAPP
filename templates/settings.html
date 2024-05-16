@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='new_icons.ico') }}">
     <link rel="stylesheet" href="../static/assets/css/settings.css">
 </head>
 <body>
@@ -13,11 +14,6 @@
         </a>
         <h1>Settings</h1>
 
-        <div class="setting-item">
-            <label for="notifications">Notification</label>
-            <input type="checkbox" id="notifications">
-            <span id="notification-status">Enable</span>
-        </div>
         <div class="setting-item">
             <label for="smart-monitoring">Sentry Mode</label>
             <input type="checkbox" id="smart-monitoring">
@@ -36,8 +32,6 @@
     <!-- Intelligent Monitor Switch Interface: Connect to the Raspberry Pi's Intelligent Monitor system to enable and disable Intelligent Monitor -->
 
 <script>
-        const notificationsCheckbox = document.getElementById('notifications');
-        const notificationStatus = document.getElementById('notification-status');
         const smartMonitoringCheckbox = document.getElementById('smart-monitoring');
         const monitoringStatus = document.getElementById('monitoring-status');
 
@@ -56,7 +50,6 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    notifications: notificationsCheckbox.checked,
                     smart_monitoring: smartMonitoringCheckbox.checked
                 })
             });
@@ -66,17 +59,13 @@
             fetch('/get_settings')
                 .then(response => response.json())
                 .then(data => {
-                    notificationsCheckbox.checked = data.notifications;
+
                     smartMonitoringCheckbox.checked = data.smart_monitoring;
-                    updateStatus(notificationsCheckbox, notificationStatus);
                     updateStatus(smartMonitoringCheckbox, monitoringStatus);
                 });
         }
 
-        notificationsCheckbox.addEventListener('change', function() {
-            updateStatus(notificationsCheckbox, notificationStatus);
-            saveState();
-        });
+
 
         smartMonitoringCheckbox.addEventListener('change', function() {
             updateStatus(smartMonitoringCheckbox, monitoringStatus);

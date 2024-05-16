@@ -7,15 +7,38 @@ from picamera2 import Picamera2
 import cv2
 import time
 import os
-
+import datetime
 app = Flask(__name__)
+"settings"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///settings.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-"monitor"
-# picam2 = Picamera2()
-# picam2.configure(picam2.create_video_configuration(main={"size": (640, 480)}))
-# picam2.start()
+
+@app.route('/settings')
+def settings():
+    return render_template('settings.html')
+
+@app.route('/get_settings', methods=['GET'])
+def get_settings():
+    settings = Settings.query.first()
+    if not settings:
+        settings = Settings(notifications=True, smart_monitoring=False)
+        db.session.add(settings)
+        db.session.commit()
+    return jsonify({
+        'smart_monitoring': settings.smart_monitoring
+    })
+
+@app.route('/set_settings', methods=['POST'])
+def set_settings():
+    data = request.get_json()
+    settings = Settings.query.first()
+    if not settings:
+        settings = Settings()
+    settings.smart_monitoring = data.get('smart_monitoring', False)
+    db.session.add(settings)
+    db.session.commit()
+    return jsonify({'status': 'success'})
 "Admin Centre"
 def get_temperature():
     temp = subprocess.run(['vcgencmd', 'measure_temp'], capture_output=True, text=True).stdout
@@ -32,7 +55,6 @@ def get_system_info():
     return system_info
 class Settings(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    notifications = db.Column(db.Boolean, default=True)
     smart_monitoring = db.Column(db.Boolean, default=False)
 
 with app.app_context():
@@ -42,33 +64,6 @@ with app.app_context():
 def index():
     return render_template('index.html')
 
-@app.route('/settings')
-def settings():
-    return render_template('settings.html')
-
-@app.route('/get_settings', methods=['GET'])
-def get_settings():
-    settings = Settings.query.first()
-    if not settings:
-        settings = Settings(notifications=True, smart_monitoring=False)
-        db.session.add(settings)
-        db.session.commit()
-    return jsonify({
-        'notifications': settings.notifications,
-        'smart_monitoring': settings.smart_monitoring
-    })
-
-@app.route('/set_settings', methods=['POST'])
-def set_settings():
-    data = request.get_json()
-    settings = Settings.query.first()
-    if not settings:
-        settings = Settings()
-    settings.notifications = data.get('notifications', True)
-    settings.smart_monitoring = data.get('smart_monitoring', False)
-    db.session.add(settings)
-    db.session.commit()
-    return jsonify({'status': 'success'})
 "monitor"
 def release_camera():
     os.system('sudo fuser -k /dev/video0')
@@ -107,7 +102,6 @@ def video_feed():
 @app.route('/monitor')
 def monitor():
     return render_template('monitor.html')
-
 
 "Admin Centre"
 @app.route('/admin_centre')
