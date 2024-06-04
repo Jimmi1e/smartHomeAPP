@@ -7,6 +7,7 @@ from picamera2 import Picamera2
 import cv2
 import time
 import os
+import torch
 import datetime
 app = Flask(__name__)
 "settings"
@@ -60,11 +61,50 @@ class Settings(db.Model):
 with app.app_context():
     db.create_all()
 
+
 @app.route('/')
 def index():
     return render_template('index.html')
 
 "monitor"
+# def release_camera():
+#     os.system('sudo fuser -k /dev/video0')
+#     os.system('sudo fuser -k /dev/video1')
+
+# def initialize_camera():
+#     attempts = 3
+#     for i in range(attempts):
+#         try:
+#             release_camera()
+#             picam2 = Picamera2()
+#             config = picam2.create_video_configuration(main={"size": (640, 480)})
+#             picam2.configure(config)
+#             picam2.start()
+#             return picam2
+#         except Exception as e:
+#             print(f"Attempt {i+1} to initialize camera failed: {e}")
+#             time.sleep(2)
+#     raise RuntimeError("Failed to initialize camera after multiple attempts")
+
+# picam2 = initialize_camera()
+
+# def gen_frames():
+#     while True:
+#         frame = picam2.capture_array()
+#         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+#         ret, buffer = cv2.imencode('.jpg', frame, [int(cv2.IMWRITE_JPEG_QUALITY), 70])
+#         frame = buffer.tobytes()
+#         yield (b'--frame\r\n'
+#                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+# @app.route('/video_feed')
+# def video_feed():
+#     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+# @app.route('/monitor')
+# def monitor():
+#     return render_template('monitor.html')
+# Camera and YOLOv5 setup
 def release_camera():
     os.system('sudo fuser -k /dev/video0')
     os.system('sudo fuser -k /dev/video1')
@@ -86,10 +126,39 @@ def initialize_camera():
 
 picam2 = initialize_camera()
 
+# Load YOLOv5 model
+model_path = 'static/best.pt'  # ??????
+model = torch.hub.load('ultralytics/yolov5', 'custom', path=model_path, force_reload=True)
+model.conf = 0.25  # confidence threshold
+
+# Global variable to store intrusion status
+intrusion_detected = False
+
+def detect_pedestrians(frame):
+    global intrusion_detected
+    results = model(frame)
+    boxes = results.xyxy[0].cpu().numpy()
+    
+    num_people = 0
+    for box in boxes:
+        x1, y1, x2, y2, conf, cls = box
+        if int(cls) in [0, 1]:  # class_id == 0 ? person, class_id == 1 ? person&bike
+            num_people += 1
+            color = (0, 255, 0) if int(cls) == 0 else (0, 0, 255)
+            cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), color, 2)
+    
+    intrusion_detected = num_people > 0
+    return frame, num_people
+
 def gen_frames():
     while True:
         frame = picam2.capture_array()
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame, num_people = detect_pedestrians(frame)
+        now = datetime.datetime.now()
+        current_time = now.strftime("%H:%M:%S")
+        cv2.putText(frame, f'Time: {current_time}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv2.putText(frame, f'People: {num_people}', (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         ret, buffer = cv2.imencode('.jpg', frame, [int(cv2.IMWRITE_JPEG_QUALITY), 70])
         frame = buffer.tobytes()
         yield (b'--frame\r\n'
@@ -102,6 +171,10 @@ def video_feed():
 @app.route('/monitor')
 def monitor():
     return render_template('monitor.html')
+
+@app.route('/check_intrusion')
+def check_intrusion():
+    return jsonify({'intrusion': intrusion_detected})
 
 "Admin Centre"
 @app.route('/admin_centre')
@@ -130,5 +203,12 @@ def system_info():
         'external_devices': system_info['external_devices']
     }
     return jsonify(data)
+
+
+
+
+
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

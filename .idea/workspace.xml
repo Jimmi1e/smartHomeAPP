@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="45eedd82-21ad-4bc6-9fb9-11d34a94ae64" name="Changes" comment="#version3.1.0. Big Big Big improvement!!! We added new feature in our system(Real-time Monitor). This function allows user using live-stream monitoring.">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instance/settings.db" beforeDir="false" afterPath="$PROJECT_DIR$/instance/settings.db" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -233,6 +233,7 @@
       <workItem from="1715836202655" duration="124000" />
       <workItem from="1715840559393" duration="279000" />
       <workItem from="1715881967872" duration="64000" />
+      <workItem from="1716437829344" duration="117000" />
     </task>
     <task id="LOCAL-00001" summary="version2">
       <option name="closed" value="true" />
