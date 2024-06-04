@@ -129,7 +129,7 @@ picam2 = initialize_camera()
 # Load YOLOv5 model
 model_path = 'static/best.pt'  # ??????
 model = torch.hub.load('ultralytics/yolov5', 'custom', path=model_path, force_reload=True)
-model.conf = 0.25  # confidence threshold
+model.conf = 0.5  # confidence threshold
 
 # Global variable to store intrusion status
 intrusion_detected = False
@@ -142,7 +142,7 @@ def detect_pedestrians(frame):
     num_people = 0
     for box in boxes:
         x1, y1, x2, y2, conf, cls = box
-        if int(cls) in [0, 1]:  # class_id == 0 ? person, class_id == 1 ? person&bike
+        if int(cls) in [0, 1, 2, 3 ,4]:  # class_id == 0 ? person, class_id == 1 ? person&bike
             num_people += 1
             color = (0, 255, 0) if int(cls) == 0 else (0, 0, 255)
             cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), color, 2)
