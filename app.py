@@ -9,6 +9,9 @@ import time
 import os
 import torch
 import datetime
+import Adafruit_BMP.BMP085 as BMP085
+import logging
+import requests
 app = Flask(__name__)
 "settings"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///settings.db'
@@ -308,8 +311,98 @@ def system_info():
     return jsonify(data)
 
 
+#envionment and weather
 
+logging.basicConfig(level=logging.DEBUG)
 
+# Initialize BMP180 sensor
+try:
+    logging.debug("Initializing BMP180 sensor on I2C bus 1")
+    sensor = BMP085.BMP085(busnum=1)
+    logging.debug("BMP180 sensor initialized successfully")
+except Exception as e:
+    logging.error("Error initializing BMP180 sensor: %s", e)
+    sensor = None
+
+# Your WeatherAPI key
+API_KEY = '0862402e107d4d40ac152143240506'  # Replace with your WeatherAPI key
+
+def get_weather_data():
+    try:
+        base_url = "http://api.weatherapi.com/v1"
+        location = "Montreal"
+        current_url = f"{base_url}/current.json?key={API_KEY}&q={location}"
+        forecast_url = f"{base_url}/forecast.json?key={API_KEY}&q={location}&days=3"
+
+        current_response = requests.get(current_url).json()
+        forecast_response = requests.get(forecast_url).json()
+
+        today_temp = current_response['current']['temp_c']
+        today_uv = current_response['current']['uv']
+        today_wind = current_response['current']['wind_kph']
+
+        tomorrow_temp = forecast_response['forecast']['forecastday'][1]['day']['avgtemp_c']
+        tomorrow_uv = forecast_response['forecast']['forecastday'][1]['day']['uv']
+        tomorrow_wind = forecast_response['forecast']['forecastday'][1]['day']['maxwind_kph']
+
+        day_after_tomorrow_temp = forecast_response['forecast']['forecastday'][2]['day']['avgtemp_c']
+        day_after_tomorrow_uv = forecast_response['forecast']['forecastday'][2]['day']['uv']
+        day_after_tomorrow_wind = forecast_response['forecast']['forecastday'][2]['day']['maxwind_kph']
+
+        return {
+            'today_temp': today_temp,
+            'today_uv': today_uv,
+            'today_wind': today_wind,
+            'tomorrow_temp': tomorrow_temp,
+            'tomorrow_uv': tomorrow_uv,
+            'tomorrow_wind': tomorrow_wind,
+            'day_after_tomorrow_temp': day_after_tomorrow_temp,
+            'day_after_tomorrow_uv': day_after_tomorrow_uv,
+            'day_after_tomorrow_wind': day_after_tomorrow_wind
+        }
+    except Exception as e:
+        logging.error("Error fetching weather data: %s", e)
+        return None
+@app.route('/environment')
+def environment():
+    if sensor is None:
+        return "Sensor not initialized", 500
+    try:
+        temperature = sensor.read_temperature()
+        pressure = sensor.read_pressure() / 100.0  # Convert Pa to hPa
+        logging.debug("Temperature: %s, Pressure: %s", temperature, pressure)
+
+        weather_data = get_weather_data()
+        if weather_data is None:
+            return "Error fetching weather data", 500
+
+        return render_template('environment.html', 
+                               temperature=temperature, 
+                               pressure=pressure,
+                               today_temp=weather_data['today_temp'],
+                               today_uv=weather_data['today_uv'],
+                               today_wind=weather_data['today_wind'],
+                               tomorrow_temp=weather_data['tomorrow_temp'],
+                               tomorrow_uv=weather_data['tomorrow_uv'],
+                               tomorrow_wind=weather_data['tomorrow_wind'],
+                               day_after_tomorrow_temp=weather_data['day_after_tomorrow_temp'],
+                               day_after_tomorrow_uv=weather_data['day_after_tomorrow_uv'],
+                               day_after_tomorrow_wind=weather_data['day_after_tomorrow_wind'])
+    except Exception as e:
+        logging.error("Error reading sensor data: %s", e)
+        return "Error reading sensor data", 500
+
+@app.route('/environment_data')
+def environment_data():
+    if sensor is None:
+        return jsonify({"error": "Sensor not initialized"}), 500
+    try:
+        temperature = sensor.read_temperature()
+        pressure = sensor.read_pressure() / 100.0  # Convert Pa to hPa
+        return jsonify({"temperature": temperature, "pressure": pressure})
+    except Exception as e:
+        logging.error("Error reading sensor data: %s", e)
+        return jsonify({"error": "Error reading sensor data"}), 500
 
 
 

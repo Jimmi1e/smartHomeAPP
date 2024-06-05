@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Environment Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        .weather-container, .data-container {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .weather-box, .data-box {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 30%;
+            text-align: center;
+            position: relative;  /* ?????? */
+        }
+        .data-box {
+            width: 80%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .data p {
+            font-size: 1.5em;
+            color: #555;
+            margin: 10px 0;
+        }
+        .weather-icon {
+            font-size: 3em;
+        }
+        .temperature, .pressure {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+            font-size: 1.2em;
+            color: #555;
+        }
+        .temperature span, .pressure span {
+            margin-right: 10px;
+        }
+        .back-button {
+            position: absolute;  /* ???? */
+            top: 10px;
+            left: 10px;
+            padding: 5px 10px;
+            background-color: #3b5998;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .back-button:hover {
+            background-color: #333;
+        }
+    </style>
+    <script>
+        function updateEnvironmentData() {
+            fetch('/environment_data')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('temperature').innerText = data.temperature + ' °C';
+                    document.getElementById('pressure').innerText = data.pressure + ' hPa';
+                });
+        }
+
+        setInterval(updateEnvironmentData, 10000);
+
+        window.onload = updateEnvironmentData;
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="data-box">
+            <a href="/" class="back-button">Back</a>
+            <h1>Today's Environment Data</h1>
+            <div class="temperature">
+                <span>&#x1F321;</span>
+                <p id="temperature">{{ temperature }} &deg;C</p>
+            </div>
+            <div class="pressure">
+                <span>&#x1F32C;</span>
+                <p id="pressure">{{ pressure }} hPa</p>
+            </div>
+        </div>
+        <div class="weather-container">
+            <div class="weather-box">
+                <h2>Today's Weather</h2>
+                <div class="weather-icon">&#x2600;</div>
+                <p>Temperature: {{ today_temp }} &deg;C</p>
+                <p>UV Index: {{ today_uv }}</p>
+                <p>Wind: {{ today_wind }} kph</p>
+            </div>
+            <div class="weather-box">
+                <h2>Tomorrow's Weather</h2>
+                <div class="weather-icon">&#x26C5;</div>
+                <p>Temperature: {{ tomorrow_temp }} &deg;C</p>
+                <p>UV Index: {{ tomorrow_uv }}</p>
+                <p>Wind: {{ tomorrow_wind }} kph</p>
+            </div>
+            <div class="weather-box">
+                <h2>Day After Tomorrow's Weather</h2>
+                <div class="weather-icon">&#x1F327;</div>
+                <p>Temperature: {{ day_after_tomorrow_temp }} &deg;C</p>
+                <p>UV Index: {{ day_after_tomorrow_uv }}</p>
+                <p>Wind: {{ day_after_tomorrow_wind }} kph</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
