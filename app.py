@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, Response
+from flask import Flask, render_template, request, jsonify, Response,send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 import psutil
 import subprocess
@@ -14,7 +14,20 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///settings.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+#Notifications
+detection_logs = []
+image_save_dir = 'static/detections'
+os.makedirs(image_save_dir, exist_ok=True)
 
+@app.route('/get_logs', methods=['GET'])
+def get_logs():
+    return jsonify(detection_logs)
+
+@app.route('/get_detection_images', methods=['GET'])
+def get_detection_images():
+    image_files = sorted(os.listdir(image_save_dir), reverse=True)
+    return jsonify(image_files)
+#Settings
 @app.route('/settings')
 def settings():
     return render_template('settings.html')
@@ -104,6 +117,78 @@ def index():
 # @app.route('/monitor')
 # def monitor():
 #     return render_template('monitor.html')
+#///////////////////////////
+# Camera and YOLOv5 setup
+# def release_camera():
+#     os.system('sudo fuser -k /dev/video0')
+#     os.system('sudo fuser -k /dev/video1')
+
+# def initialize_camera():
+#     attempts = 3
+#     for i in range(attempts):
+#         try:
+#             release_camera()
+#             picam2 = Picamera2()
+#             config = picam2.create_video_configuration(main={"size": (640, 480)})
+#             picam2.configure(config)
+#             picam2.start()
+#             return picam2
+#         except Exception as e:
+#             print(f"Attempt {i+1} to initialize camera failed: {e}")
+#             time.sleep(2)
+#     raise RuntimeError("Failed to initialize camera after multiple attempts")
+
+# picam2 = initialize_camera()
+
+# # Load YOLOv5 model
+# model_path = 'static/best.pt'  # ??????
+# model = torch.hub.load('ultralytics/yolov5', 'custom', path=model_path, force_reload=True)
+# model.conf = 0.5  # confidence threshold
+
+# # Global variable to store intrusion status
+# intrusion_detected = False
+
+# def detect_pedestrians(frame):
+#     global intrusion_detected
+#     results = model(frame)
+#     boxes = results.xyxy[0].cpu().numpy()
+    
+#     num_people = 0
+#     for box in boxes:
+#         x1, y1, x2, y2, conf, cls = box
+#         if int(cls) in [0, 1, 2, 3 ,4]:  # class_id == 0 ? person, class_id == 1 ? person&bike
+#             num_people += 1
+#             color = (0, 255, 0) if int(cls) == 0 else (0, 0, 255)
+#             cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), color, 2)
+    
+#     intrusion_detected = num_people > 0
+#     return frame, num_people
+
+# def gen_frames():
+#     while True:
+#         frame = picam2.capture_array()
+#         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+#         frame, num_people = detect_pedestrians(frame)
+#         now = datetime.datetime.now()
+#         current_time = now.strftime("%H:%M:%S")
+#         cv2.putText(frame, f'Time: {current_time}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+#         cv2.putText(frame, f'People: {num_people}', (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+#         ret, buffer = cv2.imencode('.jpg', frame, [int(cv2.IMWRITE_JPEG_QUALITY), 70])
+#         frame = buffer.tobytes()
+#         yield (b'--frame\r\n'
+#                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+# @app.route('/video_feed')
+# def video_feed():
+#     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+# @app.route('/monitor')
+# def monitor():
+#     return render_template('monitor.html')
+
+# @app.route('/check_intrusion')
+# def check_intrusion():
+#     return jsonify({'intrusion': intrusion_detected})
 # Camera and YOLOv5 setup
 def release_camera():
     os.system('sudo fuser -k /dev/video0')
@@ -127,33 +212,47 @@ def initialize_camera():
 picam2 = initialize_camera()
 
 # Load YOLOv5 model
-model_path = 'static/best.pt'  # ??????
+model_path = 'static/best.pt'
 model = torch.hub.load('ultralytics/yolov5', 'custom', path=model_path, force_reload=True)
 model.conf = 0.5  # confidence threshold
 
 # Global variable to store intrusion status
 intrusion_detected = False
+last_log_time = time.time()
 
 def detect_pedestrians(frame):
-    global intrusion_detected
+    global intrusion_detected, last_log_time
     results = model(frame)
     boxes = results.xyxy[0].cpu().numpy()
     
     num_people = 0
     for box in boxes:
         x1, y1, x2, y2, conf, cls = box
-        if int(cls) in [0, 1, 2, 3 ,4]:  # class_id == 0 ? person, class_id == 1 ? person&bike
+        if int(cls) in [0, 1, 2, 3, 4]:  # class_id == 0 ? person, class_id == 1 ? person&bike
             num_people += 1
             color = (0, 255, 0) if int(cls) == 0 else (0, 0, 255)
             cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), color, 2)
     
-    intrusion_detected = num_people > 0
+    current_time = time.time()
+    if num_people > 0:
+        intrusion_detected = True
+        if current_time - last_log_time > 30:
+            timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            detection_logs.append(f'Detection at {timestamp}')
+            image_path = os.path.join(image_save_dir, f'Human_{timestamp}.jpg')
+            cv2.putText(frame, f'Time: {timestamp}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            cv2.putText(frame, 'Human Detected', (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            cv2.imwrite(image_path, frame)
+            last_log_time = current_time
+    else:
+        intrusion_detected = False
+
     return frame, num_people
 
 def gen_frames():
     while True:
         frame = picam2.capture_array()
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
         frame, num_people = detect_pedestrians(frame)
         now = datetime.datetime.now()
         current_time = now.strftime("%H:%M:%S")
@@ -171,6 +270,10 @@ def video_feed():
 @app.route('/monitor')
 def monitor():
     return render_template('monitor.html')
+
+@app.route('/notifications')
+def notifications():
+    return render_template('notifications.html')
 
 @app.route('/check_intrusion')
 def check_intrusion():

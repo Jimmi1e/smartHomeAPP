@@ -3,22 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notifications</title>
-    <link rel="stylesheet" href="../static/assets/css/notifications.css">
+    <title>Detection Notifications</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='new_icons.ico') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            width: 80%;
+            max-width: 800px;
+            background: #fff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .header {
+            background-color: #3b5998;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 1.5em;
+        }
+        .back-button {
+            background: #fff;
+            color: #3b5998;
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            text-align: center;
+            line-height: 20px;
+            font-size: 1.2em;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .back-button:hover {
+            background-color: #ddd;
+        }
+        .log {
+            padding: 10px;
+            margin: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .log img {
+            width: 640px;
+            height: 480px;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+    </style>
+    <script>
+        function fetchNotifications() {
+            fetch('/get_detection_images')
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('log-container');
+                    container.innerHTML = '';
+                    data.forEach(image => {
+                        const logDiv = document.createElement('div');
+                        logDiv.classList.add('log');
+                        const img = document.createElement('img');
+                        img.src = '/static/detections/' + image;
+                        const timestamp = document.createElement('p');
+                        timestamp.textContent = image.replace('Human_', '').replace('.jpg', '').replace('_', ' ');
+                        logDiv.appendChild(img);
+                        logDiv.appendChild(timestamp);
+                        container.appendChild(logDiv);
+                    });
+                });
+        }
+
+        setInterval(fetchNotifications, 30000); // Fetch logs every 30 seconds
+        window.onload = fetchNotifications; // Fetch logs when the page loads
+    </script>
 </head>
 <body>
     <div class="container">
-        <a href="{{ url_for('index') }}" class="back-to-home">
-            <span class="arrow-left">&larr;</span> Back to Home
-        </a>
-        <h1>Notifications</h1>
-        <div class="notification-list">
-            {% for notification in notifications %}
-                <div class="notification-item">
-                    <p>{{ notification }}</p>
-                    <img src="../static/changes/{{ notification.split(":")[0] }}.jpg" alt="Change detected">
-                </div>
-            {% endfor %}
+        <div class="header">
+            <a href="/" class="back-button">&#8592;</a>
+            <span>Detection Notifications</span>
+        </div>
+        <div id="log-container">
+            <!-- Logs will be displayed here -->
         </div>
     </div>
 </body>
