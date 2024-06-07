@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .data {
+            font-size: 1.2em;
+            color: #555;
+        }
+        .alert {
+            font-size: 1.2em;
+            color: red;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 1em;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script>
+        function fetchData() {
+            fetch('/securitysystem/data')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('distance').innerText = `Distance: ${data.distance} cm`;
+                    document.getElementById('alert_message').innerText = data.alert_message;
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchData();
+            setInterval(fetchData, 1000); // Fetch data every 3 seconds
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Security System</h1>
+        <div class="data">
+            <p id="distance">Distance: {{ distance }} cm</p>
+            <p class="alert" id="alert_message">{{ alert_message }}</p>
+        </div>
+        <form method="POST">
+            <button type="submit" name="turn_off_buzzer" class="button">Turn off the buzzer</button>
+        </form>
+    </div>
+</body>
+</html>

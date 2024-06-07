@@ -12,24 +12,23 @@ import datetime
 import Adafruit_BMP.BMP085 as BMP085
 import logging
 import requests
+
+import spidev
+import sys
+from gpiozero import DigitalOutputDevice, InputDevice
+import numpy as np
 app = Flask(__name__)
 "settings"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///settings.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-#Notifications
-detection_logs = []
-image_save_dir = 'static/detections'
-os.makedirs(image_save_dir, exist_ok=True)
+class Settings(db.Model):
+    __tablename__ = 'settings'
+    __table_args__ = {'extend_existing': True}  # Add this line
+    id = db.Column(db.Integer, primary_key=True)
+    notifications = db.Column(db.Boolean, default=True)
+    smart_monitoring = db.Column(db.Boolean, default=False)
 
-@app.route('/get_logs', methods=['GET'])
-def get_logs():
-    return jsonify(detection_logs)
-
-@app.route('/get_detection_images', methods=['GET'])
-def get_detection_images():
-    image_files = sorted(os.listdir(image_save_dir), reverse=True)
-    return jsonify(image_files)
 #Settings
 @app.route('/settings')
 def settings():
@@ -56,6 +55,20 @@ def set_settings():
     db.session.add(settings)
     db.session.commit()
     return jsonify({'status': 'success'})
+#Notifications
+detection_logs = []
+image_save_dir = 'static/detections'
+os.makedirs(image_save_dir, exist_ok=True)
+
+@app.route('/get_logs', methods=['GET'])
+def get_logs():
+    return jsonify(detection_logs)
+
+@app.route('/get_detection_images', methods=['GET'])
+def get_detection_images():
+    image_files = sorted(os.listdir(image_save_dir), reverse=True)
+    return jsonify(image_files)
+
 "Admin Centre"
 def get_temperature():
     temp = subprocess.run(['vcgencmd', 'measure_temp'], capture_output=True, text=True).stdout
@@ -70,9 +83,10 @@ def get_system_info():
         'external_devices': [disk.device for disk in psutil.disk_partitions()]
     }
     return system_info
-class Settings(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    smart_monitoring = db.Column(db.Boolean, default=False)
+#shanchude
+# class Settings(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     smart_monitoring = db.Column(db.Boolean, default=False)
 
 with app.app_context():
     db.create_all()
@@ -403,8 +417,203 @@ def environment_data():
     except Exception as e:
         logging.error("Error reading sensor data: %s", e)
         return jsonify({"error": "Error reading sensor data"}), 500
+    
 
+#alert
+# Initialize SPI for MCP3008
+spi = spidev.SpiDev()
+spi.open(0, 0)
+spi.max_speed_hz = 1350000
 
+# GPIO setup for buzzers using gpiozero
+BUZZER_A_PIN = 26
+BUZZER_B_PIN = 20
+buzzer_a = DigitalOutputDevice(BUZZER_A_PIN, active_high=False, initial_value=True)  # Ensure buzzer A is off initially
+buzzer_b = DigitalOutputDevice(BUZZER_B_PIN, active_high=False, initial_value=True)  # Ensure buzzer B is off initially
+buzzer_a.off()
+buzzer_b.off()
+# Setup flame sensor
+FLAME_SENSOR_PIN = 16
+flame_sensor = InputDevice(FLAME_SENSOR_PIN, pull_up=True)  # Assuming active_low for low-level trigger
 
+# Ensure the flame sensor stabilizes at startup
+time.sleep(2)
+
+# Record the last time buzzer B was triggered due to temperature
+last_temperature_buzz_time = None
+# Record the last time buzzer B was turned off manually
+last_buzzer_off_time = None
+
+# Read ADC data from MCP3008
+def read_adc(channel):
+    adc = spi.xfer2([1, (8 + channel) << 4, 0])
+    data = ((adc[1] & 3) << 8) + adc[2]
+    return data
+
+# Convert ADC value to voltage
+def adc_to_voltage(adc_value):
+    return adc_value * (3.3 / 1023)
+
+# Voltage to distance conversion table
+voltage_distance_table = {
+    0.4: 150,  # 0.4V -> 150cm
+    0.5: 120,  # 0.5V -> 120cm
+    0.6: 90,   # 0.6V -> 90cm
+    0.8: 70,   # 0.8V -> 70cm
+    1.0: 50,   # 1.0V -> 50cm
+    1.3: 30,   # 1.3V -> 30cm
+    1.8: 20,   # 1.8V -> 20cm
+    2.5: 10    # 2.5V -> 10cm
+}
+def voltage_to_distance(voltage):
+    voltages = np.array(list(voltage_distance_table.keys()))
+    distances = np.array(list(voltage_distance_table.values()))
+
+    if voltage <= voltages.min():
+        return distances.max()  # Maximum distance
+    elif voltage >= voltages.max():
+        return distances.min()  # Minimum distance
+    else:
+        distance = np.interp(voltage, voltages, distances)
+        return distance
+
+# def control_buzzer_a(distance):
+#     logging.debug("Controlling buzzer A with distance: %s", distance)
+#     if distance <= 30:
+#         logging.debug("Distance <= 30 cm, turning buzzer A on")
+#         buzzer_a.on()  # Turn on buzzer A
+#         time.sleep(5)  # Buzzer A on for 5 seconds
+#         buzzer_a.off()  # Turn off buzzer A
+#         logging.debug("Buzzer A off after 5 seconds")
+#     else:
+#         logging.debug("Distance > 30 cm, ensuring buzzer A is off")
+#         buzzer_a.off()  # Ensure buzzer A is off
+def control_buzzer_a(distance):
+    logging.debug("Controlling buzzer A with distance: %s", distance)
+    
+    settings = Settings.query.first()
+    if not settings.smart_monitoring: 
+        logging.debug("Sentry Mode is disabled, Buzzer A will not work")
+        buzzer_a.off()
+        return
+    
+    if distance <= 30:
+        logging.debug("Distance <= 30 cm, turning buzzer A on")
+        buzzer_a.on()  # Turn on buzzer A
+        time.sleep(5)  # Buzzer A on for 5 seconds
+        buzzer_a.off()  # Turn off buzzer A
+        logging.debug("Buzzer A off after 5 seconds")
+    else:
+        logging.debug("Distance > 30 cm, ensuring buzzer A is off")
+        buzzer_a.off()  # Ensure buzzer A is off
+
+def control_buzzer_b(temperature, fire_detected):
+    global last_temperature_buzz_time, last_buzzer_off_time
+    logging.debug("Controlling buzzer B with temperature: %s and fire_detected: %s", temperature, fire_detected)
+
+    current_time = datetime.datetime.now()
+
+    if fire_detected:
+        if last_buzzer_off_time is None or current_time - last_buzzer_off_time > datetime.timedelta(seconds=40):
+            logging.debug("Fire detected, turning buzzer B on continuously")
+            buzzer_b.on()
+        else:
+            logging.debug("Fire detected but buzzer B was manually turned off within the last 4 hours")
+            buzzer_b.off()
+    elif temperature >= 28 and not fire_detected:
+        if last_temperature_buzz_time is None or current_time - last_temperature_buzz_time > datetime.timedelta(seconds=40):
+            logging.debug("Temperature >= 28�C, turning buzzer B on and off 3 times")
+            last_temperature_buzz_time = current_time
+            for _ in range(3):
+                buzzer_b.on()
+                time.sleep(1)
+                buzzer_b.off()
+                time.sleep(1)
+        else:
+            logging.debug("Temperature >= 28�C, but buzzer B has already been triggered within the last 4 hours")
+    else:
+        logging.debug("No fire and temperature < 28�C, ensuring buzzer B is off")
+        buzzer_b.off()
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+@app.route('/securitysystem', methods=['GET', 'POST'])
+def securitysystem():
+    global last_buzzer_off_time
+    if sensor is None:
+        return "Sensor not initialized", 500
+    try:
+        adc_value = read_adc(0)  # Read channel 0
+        voltage = adc_to_voltage(adc_value)
+        distance = voltage_to_distance(voltage)
+        temperature = sensor.read_temperature()
+        fire_detected = flame_sensor.is_active  # Corrected logic: active means fire detected
+
+        logging.debug("Fire sensor state (is_active): %s", flame_sensor.is_active)
+        logging.debug("Fire detected (corrected): %s", fire_detected)
+
+        # Control buzzers based on sensor data
+        control_buzzer_a(distance)
+        control_buzzer_b(temperature, fire_detected)
+
+        if request.method == 'POST':
+            if 'turn_off_buzzer' in request.form:
+                buzzer_b.off()
+                last_buzzer_off_time = datetime.datetime.now()
+
+        alert_message = f"The surroundings are normal: Temperature {temperature:.2f} �C"
+        if temperature >= 28 and not fire_detected:
+            alert_message = f"Level 1 Alert: The temperature exceeds {temperature:.2f} �C"
+        elif fire_detected:
+            alert_message = f"Alert 2: There is a fire: Temperature {temperature:.2f} �C"
+
+        return render_template('securitysystem.html', distance=distance, alert_message=alert_message, fire_detected=fire_detected)
+    except Exception as e:
+        logging.error("Error reading sensor data: %s", e)
+        return "Error reading sensor data", 500
+
+@app.route('/securitysystem/data')
+def securitysystem_data():
+    global last_buzzer_off_time
+    if sensor is None:
+        return jsonify({"error": "Sensor not initialized"}), 500
+    try:
+        adc_value = read_adc(0)  # Read channel 0
+        voltage = adc_to_voltage(adc_value)
+        distance = voltage_to_distance(voltage)
+        temperature = sensor.read_temperature()
+        fire_detected = flame_sensor.is_active  # Corrected logic: active means fire detected
+
+        logging.debug("Fire sensor state (is_active): %s", flame_sensor.is_active)
+        logging.debug("Fire detected (corrected): %s", fire_detected)
+
+        # Ensure buzzers are controlled here as well
+        control_buzzer_a(distance)
+        control_buzzer_b(temperature, fire_detected)
+
+        alert_message = f"The surroundings are normal: Temperature {temperature:.1f} �C"
+        if temperature >= 28 and not fire_detected:
+            alert_message = f"Level 1 Alert: The temperature exceeds {temperature:.1f} �C"
+        elif fire_detected:
+            alert_message = f"Alert 2: There is a fire: Temperature {temperature:.1f} �C"
+
+        data = {
+            "distance": f"{distance:.1f}",
+            "alert_message": alert_message,
+            "fire_detected": fire_detected
+        }
+        return jsonify(data)
+    except Exception as e:
+        logging.error("Error reading sensor data in /securitysystem/data route: %s", e)
+        return jsonify({"error": "Error reading sensor data"}), 500
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    try:
+        # Ensure buzzers are off at startup
+        buzzer_a.off()
+        buzzer_b.off()
+        app.run(host='0.0.0.0', port=5000, debug=True)
+    finally:
+        spi.close()
+        buzzer_a.off()  # Ensure buzzer A is turned off when the program exits
+        buzzer_b.off()  # Ensure buzzer B is turned off when the program exits
