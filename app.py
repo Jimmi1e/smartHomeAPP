@@ -20,8 +20,8 @@ import numpy as np
 app = Flask(__name__)
 #twillio
 last_message_time = None
-account_sid = 'AC81a5d5a20f11399420df1657dbc2fb15'
-auth_token = '0c7c92bbfb9977a0310ab5e342060f62'
+#account_sid = 'AC81a5d5a20f11399420df1657dbc2fb15'
+#auth_token = '0c7c92bbfb9977a0310ab5e342060f62'
 twilio_client = Client(account_sid, auth_token)
 
 "settings"
@@ -345,7 +345,7 @@ except Exception as e:
     sensor = None
 
 # Your WeatherAPI key
-API_KEY = '0862402e107d4d40ac152143240506'
+#API_KEY = '0862402e107d4d40ac152143240506'
 
 def get_weather_data():
     try:
