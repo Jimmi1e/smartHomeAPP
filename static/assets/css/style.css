@@ -2,7 +2,7 @@
     --green: #008000;
     --beige: #faf1ed;
     --medium-green: #058171;
-    --max-size-blocks: 700px;  // ??????????????
+    --max-size-blocks: 700px; 
 }
 
 body {
@@ -168,7 +168,7 @@ header #logo {
 header #logo img {
     display: block;
     height: auto;
-    width: 25em;  // ??em??????
+    width: 25em; 
 }
 
 header .link:hover {
@@ -214,7 +214,7 @@ main .title span {
 
 #activities {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, auto);
     gap: 15px;
     width: 100%;

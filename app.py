@@ -12,12 +12,18 @@ import datetime
 import Adafruit_BMP.BMP085 as BMP085
 import logging
 import requests
-
+from twilio.rest import Client
 import spidev
 import sys
 from gpiozero import DigitalOutputDevice, InputDevice
 import numpy as np
 app = Flask(__name__)
+#twillio
+last_message_time = None
+account_sid = 'AC81a5d5a20f11399420df1657dbc2fb15'
+auth_token = '0c7c92bbfb9977a0310ab5e342060f62'
+twilio_client = Client(account_sid, auth_token)
+
 "settings"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///settings.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -339,7 +345,7 @@ except Exception as e:
     sensor = None
 
 # Your WeatherAPI key
-API_KEY = '0862402e107d4d40ac152143240506'  # Replace with your WeatherAPI key
+API_KEY = '0862402e107d4d40ac152143240506'
 
 def get_weather_data():
     try:
@@ -418,6 +424,24 @@ def environment_data():
         logging.error("Error reading sensor data: %s", e)
         return jsonify({"error": "Error reading sensor data"}), 500
     
+#Message
+
+def send_sms(body):
+    global last_message_time
+    current_time = datetime.datetime.now()
+    if last_message_time is None or (current_time - last_message_time).total_seconds() > 15:
+        print("Successfully calling send_sms function!!!")
+        try:
+            logging.debug("Attempting to send SMS: %s", body)
+            message = twilio_client.messages.create(
+                from_='+12184007463',
+                to='+15149694866',
+                body=body
+            )
+            logging.debug("Sent message SID: %s", message.sid)
+            last_message_time = current_time
+        except Exception as e:
+            logging.error("Error sending SMS: %s", e)
 
 #alert
 # Initialize SPI for MCP3008
@@ -488,55 +512,110 @@ def voltage_to_distance(voltage):
 #     else:
 #         logging.debug("Distance > 30 cm, ensuring buzzer A is off")
 #         buzzer_a.off()  # Ensure buzzer A is off
+#new
+# def control_buzzer_a(distance):
+#     logging.debug("Controlling buzzer A with distance: %s", distance)
+
+#     settings = Settings.query.first()
+#     if not settings.smart_monitoring: 
+#         logging.debug("Sentry Mode is disabled, Buzzer A will not work")
+#         buzzer_a.off()
+#         return
+    
+#     if distance <= 30:
+#         logging.debug("Distance <= 30 cm, turning buzzer A on")
+#         buzzer_a.on()  # Turn on buzzer A
+#         time.sleep(5)  # Buzzer A on for 5 seconds
+#         buzzer_a.off()  # Turn off buzzer A
+#         logging.debug("Buzzer A off after 5 seconds")
+#         send_sms("Alert! There is a stranger approaching. Please check the surveillance.")
+#     else:
+#         logging.debug("Distance > 30 cm, ensuring buzzer A is off")
+#         buzzer_a.off()  # Ensure buzzer A is off
 def control_buzzer_a(distance):
-    logging.debug("Controlling buzzer A with distance: %s", distance)
     
     settings = Settings.query.first()
     if not settings.smart_monitoring: 
-        logging.debug("Sentry Mode is disabled, Buzzer A will not work")
+        # logging.debug("Sentry Mode is disabled, Buzzer A will not work")
         buzzer_a.off()
         return
-    
     if distance <= 30:
-        logging.debug("Distance <= 30 cm, turning buzzer A on")
+        send_sms("Alert! There is a stranger approaching. Please check the surveillance.")
+        # logging.debug("Distance <= 30 cm, turning buzzer A on")
         buzzer_a.on()  # Turn on buzzer A
         time.sleep(5)  # Buzzer A on for 5 seconds
         buzzer_a.off()  # Turn off buzzer A
-        logging.debug("Buzzer A off after 5 seconds")
+        
+        # logging.debug("Buzzer A off after 5 seconds")
+        
     else:
-        logging.debug("Distance > 30 cm, ensuring buzzer A is off")
+        # logging.debug("Distance > 30 cm, ensuring buzzer A is off")
         buzzer_a.off()  # Ensure buzzer A is off
+
+# def control_buzzer_b(temperature, fire_detected):
+#     global last_temperature_buzz_time, last_buzzer_off_time
+#     logging.debug("Controlling buzzer B with temperature: %s and fire_detected: %s", temperature, fire_detected)
+
+#     current_time = datetime.datetime.now()
+
+#     if fire_detected:
+#         if last_buzzer_off_time is None or current_time - last_buzzer_off_time > datetime.timedelta(seconds=40):
+#             logging.debug("Fire detected, turning buzzer B on continuously")
+#             buzzer_b.on()
+#             send_sms("Alert: Fire detected. Please check your house appliances and call 911 immediately.")
+#         else:
+#             logging.debug("Fire detected but buzzer B was manually turned off within the last 4 hours")
+#             buzzer_b.off()
+#     elif temperature >= 28 and not fire_detected:
+#         if last_temperature_buzz_time is None or current_time - last_temperature_buzz_time > datetime.timedelta(seconds=40):
+#             logging.debug("Temperature >= 28�C, turning buzzer B on and off 3 times")
+#             last_temperature_buzz_time = current_time
+#             for _ in range(3):
+#                 buzzer_b.on()
+#                 time.sleep(1)
+#                 buzzer_b.off()
+#                 time.sleep(1)
+#             send_sms("Alert: Ambient temperature anomaly detected, potential fire hazard.")
+#         else:
+#             logging.debug("Temperature >= 28�C, but buzzer B has already been triggered within the last 4 hours")
+#     else:
+#         logging.debug("No fire and temperature < 28�C, ensuring buzzer B is off")
+#         buzzer_b.off()
 
 def control_buzzer_b(temperature, fire_detected):
     global last_temperature_buzz_time, last_buzzer_off_time
-    logging.debug("Controlling buzzer B with temperature: %s and fire_detected: %s", temperature, fire_detected)
+    # logging.debug("Controlling buzzer B with temperature: %s and fire_detected: %s", temperature, fire_detected)
 
     current_time = datetime.datetime.now()
 
     if fire_detected:
         if last_buzzer_off_time is None or current_time - last_buzzer_off_time > datetime.timedelta(seconds=40):
-            logging.debug("Fire detected, turning buzzer B on continuously")
+            #logging.debug("Fire detected, turning buzzer B on continuously")
             buzzer_b.on()
+            send_sms("Alert: Fire detected. Please check your house appliances and call 911 immediately.")
         else:
-            logging.debug("Fire detected but buzzer B was manually turned off within the last 4 hours")
+            #logging.debug("Fire detected but buzzer B was manually turned off within the last 4 hours")
             buzzer_b.off()
-    elif temperature >= 28 and not fire_detected:
+    elif temperature >= 27 and not fire_detected:
         if last_temperature_buzz_time is None or current_time - last_temperature_buzz_time > datetime.timedelta(seconds=40):
-            logging.debug("Temperature >= 28�C, turning buzzer B on and off 3 times")
+            #logging.debug("Temperature >= 28�C, turning buzzer B on and off 3 times")
             last_temperature_buzz_time = current_time
+            send_sms("Alert: Ambient temperature anomaly detected, potential fire hazard.") 
             for _ in range(3):
                 buzzer_b.on()
                 time.sleep(1)
                 buzzer_b.off()
                 time.sleep(1)
-        else:
-            logging.debug("Temperature >= 28�C, but buzzer B has already been triggered within the last 4 hours")
+            
+        #else:
+            #logging.debug("Temperature >= 28�C, but buzzer B has already been triggered within the last 4 hours")
     else:
-        logging.debug("No fire and temperature < 28�C, ensuring buzzer B is off")
+        #logging.debug("No fire and temperature < 28�C, ensuring buzzer B is off")
         buzzer_b.off()
-@app.route('/')
-def home():
-    return render_template('index.html')
+
+# @app.route('/')
+# def home():
+#     return render_template('index.html')
 
 @app.route('/securitysystem', methods=['GET', 'POST'])
 def securitysystem():
@@ -550,8 +629,8 @@ def securitysystem():
         temperature = sensor.read_temperature()
         fire_detected = flame_sensor.is_active  # Corrected logic: active means fire detected
 
-        logging.debug("Fire sensor state (is_active): %s", flame_sensor.is_active)
-        logging.debug("Fire detected (corrected): %s", fire_detected)
+        #logging.debug("Fire sensor state (is_active): %s", flame_sensor.is_active)
+        #logging.debug("Fire detected (corrected): %s", fire_detected)
 
         # Control buzzers based on sensor data
         control_buzzer_a(distance)
@@ -563,14 +642,14 @@ def securitysystem():
                 last_buzzer_off_time = datetime.datetime.now()
 
         alert_message = f"The surroundings are normal: Temperature {temperature:.2f} �C"
-        if temperature >= 28 and not fire_detected:
+        if temperature >= 27 and not fire_detected:
             alert_message = f"Level 1 Alert: The temperature exceeds {temperature:.2f} �C"
         elif fire_detected:
             alert_message = f"Alert 2: There is a fire: Temperature {temperature:.2f} �C"
 
         return render_template('securitysystem.html', distance=distance, alert_message=alert_message, fire_detected=fire_detected)
     except Exception as e:
-        logging.error("Error reading sensor data: %s", e)
+        #logging.error("Error reading sensor data: %s", e)
         return "Error reading sensor data", 500
 
 @app.route('/securitysystem/data')
@@ -585,18 +664,18 @@ def securitysystem_data():
         temperature = sensor.read_temperature()
         fire_detected = flame_sensor.is_active  # Corrected logic: active means fire detected
 
-        logging.debug("Fire sensor state (is_active): %s", flame_sensor.is_active)
-        logging.debug("Fire detected (corrected): %s", fire_detected)
+        #logging.debug("Fire sensor state (is_active): %s", flame_sensor.is_active)
+        #logging.debug("Fire detected (corrected): %s", fire_detected)
 
         # Ensure buzzers are controlled here as well
         control_buzzer_a(distance)
         control_buzzer_b(temperature, fire_detected)
 
-        alert_message = f"The surroundings are normal: Temperature {temperature:.1f} �C"
-        if temperature >= 28 and not fire_detected:
-            alert_message = f"Level 1 Alert: The temperature exceeds {temperature:.1f} �C"
+        alert_message = f"The surroundings are normal: Temperature {temperature:.1f} °C"
+        if temperature >= 27 and not fire_detected:
+            alert_message = f"Level 1 Alert: The temperature exceeds {temperature:.1f} °C"
         elif fire_detected:
-            alert_message = f"Alert 2: There is a fire: Temperature {temperature:.1f} �C"
+            alert_message = f"Alert 2: There is a fire: Temperature {temperature:.1f} °C"
 
         data = {
             "distance": f"{distance:.1f}",
@@ -605,7 +684,7 @@ def securitysystem_data():
         }
         return jsonify(data)
     except Exception as e:
-        logging.error("Error reading sensor data in /securitysystem/data route: %s", e)
+        #logging.error("Error reading sensor data in /securitysystem/data route: %s", e)
         return jsonify({"error": "Error reading sensor data"}), 500
 if __name__ == '__main__':
     try:

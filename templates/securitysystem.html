@@ -11,14 +11,16 @@
             background-color: #f4f4f4;
             margin: 0;
             padding: 0;
+            position: relative;
         }
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 50px auto;
             padding: 20px;
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
         h1 {
             color: #333;
@@ -41,8 +43,39 @@
             border-radius: 5px;
             cursor: pointer;
             text-decoration: none;
+            margin-top: 20px;
         }
         .button:hover {
+            background-color: #0056b3;
+        }
+        #distance_container, #alert_container {
+            margin: 10px 0;
+            padding: 15px;
+            width: 95%;
+            text-align: center;
+            border: 1px solid #dcdcdc;
+            border-radius: 5px;
+        }
+        #distance_container {
+            background-color: #e0f7fa;
+        }
+        #alert_container {
+            background-color: #ffebee;
+        }
+        .return-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 10px 20px;
+            font-size: 1em;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .return-button:hover {
             background-color: #0056b3;
         }
     </style>
@@ -51,7 +84,7 @@
             fetch('/securitysystem/data')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('distance').innerText = `Distance: ${data.distance} cm`;
+                    document.getElementById('distance').innerText = `Distance to door ${data.distance} cm`;
                     document.getElementById('alert_message').innerText = data.alert_message;
                 })
                 .catch(error => console.error('Error fetching data:', error));
@@ -59,15 +92,18 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             fetchData();
-            setInterval(fetchData, 1000); // Fetch data every 3 seconds
+            setInterval(fetchData, 3000); // Fetch data every 3 seconds
         });
     </script>
 </head>
 <body>
     <div class="container">
+        <button onclick="window.location.href='/'" class="return-button">Return</button>
         <h1>Security System</h1>
-        <div class="data">
+        <div id="distance_container">
             <p id="distance">Distance: {{ distance }} cm</p>
+        </div>
+        <div id="alert_container">
             <p class="alert" id="alert_message">{{ alert_message }}</p>
         </div>
         <form method="POST">
