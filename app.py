@@ -20,8 +20,8 @@ import numpy as np
 app = Flask(__name__)
 #twillio
 last_message_time = None
-#account_sid = 'SID'
-#auth_token = 'TOKEN'
+account_sid = 'SID'
+auth_token = 'TOKEN'
 twilio_client = Client(account_sid, auth_token)
 
 "settings"
