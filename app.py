@@ -345,7 +345,7 @@ except Exception as e:
     sensor = None
 
 # Your WeatherAPI key
-#API_KEY = '0862402e107d4d40ac152143240506'
+#API_KEY = 'API'
 
 def get_weather_data():
     try:
